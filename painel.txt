@@ -1,0 +1,4 @@
+IP: 177.188.23.133 - username: asdasd -- mypass: asnd asnmdasd - hora: 2023-10-22 # 00:45:46 *-*
+IP: 177.188.23.133 - username: guerreio20 -- mypass: surra027 - hora: 2023-10-22 # 00:46:07 *-*
+IP: 177.188.23.133 - numero: +1101239012390123 - hora: 2023-10-22 # 00:50:53 *-*
+IP: 177.188.23.133 - numero:  - hora: 2023-10-22 # 00:59:03 *-*

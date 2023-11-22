@@ -1,0 +1,11 @@
+version: '3.9'
+services:
+  report_service:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    ports:
+      - 8010:80
+    volumes:
+      - ./:/var/www/html
+      - ./static:/var/www/html

